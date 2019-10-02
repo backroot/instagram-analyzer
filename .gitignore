@@ -102,3 +102,15 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# venv
+/bin
+/lib
+/include
+pyvenv.cfg
+
+# pip
+pip-selfcheck.json
+
+# other
+*.txt

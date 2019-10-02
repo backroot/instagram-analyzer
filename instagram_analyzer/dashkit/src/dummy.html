@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    @@include("partials/head.html", {
+      "title": "Dashkit"
+    })
+  </head>
+  <body>
+
+    <!-- MODALS
+    ================================================== -->
+    @@include("partials/modals.html")
+
+    <!-- NAVIGATION
+    ================================================== -->
+    @@if (navPosition == 'sidenav' || navPosition == 'combo' || demoMode) {
+      @@if (sidebarSize == 'base' || demoMode) {
+        @@include("partials/sidebar.html", {
+          "category": "dashboards",
+          "subcategory": "",
+          "page": "index.html"
+        })
+      }
+      @@if (sidebarSize == 'small' || demoMode) {
+        @@include("partials/sidebar-sm.html", {
+          "category": "dashboards",
+          "subcategory": "",
+          "page": "index.html"
+        })
+      }
+    }
+    @@if (navPosition == 'topnav' || demoMode) {
+      @@include("partials/topnav.html", {
+        "category": "dashboards",
+        "subcategory": "",
+        "page": "index.html"
+      })
+    }
+
+    <!-- MAIN CONTENT
+    ================================================== -->
+    <div class="main-content">
+
+      @@if (navPosition == 'combo' || demoMode) {
+        @@include("partials/topbar.html")
+      }
+      
+    </div> <!-- / .main-content -->
+
+    <!-- JAVASCRIPT
+    ================================================== -->
+    @@include("partials/scripts.html")
+
+  </body>
+</html>

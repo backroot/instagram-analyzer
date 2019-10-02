@@ -1,0 +1,38 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+
+<!-- Libs CSS -->
+<!-- build:css @@webRoot/assets/fonts/feather/feather.min.css -->
+<link rel="stylesheet" href="@@webRoot/assets/fonts/feather/feather.css">
+<!-- endbuild -->
+<link rel="stylesheet" href="@@webRoot/node_modules/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="@@webRoot/node_modules/quill/dist/quill.core.css">
+<link rel="stylesheet" href="@@webRoot/node_modules/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="@@webRoot/node_modules/highlight.js/styles/vs2015.css">
+
+<!-- Map -->
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+
+<!-- Theme CSS -->
+@@if (colorScheme=="light" && !demoMode) {
+<!-- build:css @@webRoot/assets/css/theme.min.css -->
+<link rel="stylesheet" href="@@webRoot/assets/css/theme.css" id="stylesheetLight">
+<!-- endbuild -->
+} @@if (colorScheme=="dark" && !demoMode) {
+<!-- build:css @@webRoot/assets/css/theme-dark.min.css -->
+<link rel="stylesheet" href="@@webRoot/assets/css/theme-dark.css" id="stylesheetDark">
+<!-- endbuild -->
+} @@if (demoMode) {
+<!-- build:css @@webRoot/assets/css/theme.min.css id="stylesheetLight" -->
+<link rel="stylesheet" href="@@webRoot/assets/css/theme.css" id="stylesheetLight">
+<!-- endbuild -->
+
+<!-- build:css @@webRoot/assets/css/theme-dark.min.css id="stylesheetDark" -->
+<link rel="stylesheet" href="@@webRoot/assets/css/theme-dark.css" id="stylesheetDark">
+<!-- endbuild -->
+
+<style>body { display: none; }</style>
+}
+
+<title>@@title</title>
