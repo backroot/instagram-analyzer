@@ -113,4 +113,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # other
-*.txt
+test.*
