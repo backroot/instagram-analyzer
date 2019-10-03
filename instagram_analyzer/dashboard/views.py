@@ -5,6 +5,8 @@ from django.http import HttpResponse
 
 def index(request):
     context = {}
-    #return HttpResponse("Hello, world. You're at the polls index.")
-    #return HttpResponse(template.render(context, request))
     return render(request, 'dashboard/index.html', context)
+
+def login(request):
+    context = {}
+    return render(request, 'dashboard/login.html', context)
