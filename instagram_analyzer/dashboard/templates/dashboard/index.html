@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+    <meta name="description" content="Instagram Analyzer">
 
     <!-- Libs CSS -->
     <link rel="stylesheet" href="{% static 'dashboard/assets/fonts/feather/feather.min.css' %}">
@@ -17,9 +17,7 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
 
     <!-- Theme CSS -->
-      
     <link rel="stylesheet" href="{% static 'dashboard/assets/css/theme.min.css' %}" id="stylesheetLight">
-
     <link rel="stylesheet" href="{% static 'dashboard/assets/css/theme-dark.min.css' %}" id="stylesheetDark">
 
     <style>body { display: none; }</style>
@@ -103,11 +101,12 @@
 
     <div class="row align-items-center">
       <div class="col">
-        <h1 class="header-title">アカウント情報一覧 （フォロワー数）</h1>
+        <div class="h2 my-2 header-title d-inline-block">アカウント情報一覧</div>
+        <div class="alert alert-secondary mx-2 my-0 p-2 d-inline-block" role="alert">フォロワー数</div>
       </div>
       <div class="col-auto">
-        <a href="#" class="btn btn-info mr-5"><span class="fe fe-activity mr-2"></span>フォロー数に切り替え</a>
-        <a href="#" class="btn btn-primary"><span class="fe fe-user-plus mr-2"></span>アカウント追加</a>
+        <a href="#" class="btn btn-info mr-5 my-2"><span class="fe fe-activity mr-2"></span>フォロー数に切り替え</a>
+        <a href="#" class="btn btn-primary my-2"><span class="fe fe-user-plus mr-2"></span>アカウント追加</a>
       </div>
     </div>
 
