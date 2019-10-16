@@ -1,12 +1,12 @@
 from django.db import models
 
-class user(models.Model):
+class User(models.Model):
     name         = models.CharField(max_length=100)
     password     = models.CharField(max_length=255)
     create_date  = models.DateTimeField(auto_now_add=True)
     update_date  = models.DateTimeField(auto_now=True)
 
-class account_summary(models.Model):
+class AccountSummary(models.Model):
     user_id      = models.IntegerField()
     account_name = models.CharField(max_length=100)
     scrape_date  = models.DateField()
