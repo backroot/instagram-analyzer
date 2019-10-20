@@ -1,6 +1,7 @@
 {% load static %}
+{% load widget_tweaks %}
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -38,17 +39,27 @@
             </h1>
           
           <!-- Form -->
-          <form>
-
-            <!-- Email address -->
+          <form method="post">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    {% if field == 'username' %}
+                    <p class="alert alert-danger"><h4 class="alert-heading">ログインID</h4>{{ error }}</p>
+                    {% endif %}
+                    {% if field == 'password' %}
+                    <p class="alert alert-danger"><h4 class="alert-heading">パスワード</h4>{{ error }}</p>
+                    {% else %}
+                    <p class="alert alert-danger">{{ error }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <!-- Login ID -->
             <div class="form-group">
 
               <!-- Label -->
               <label>ログインID</label>
 
               <!-- Input -->
-              <input type="text" class="form-control" placeholder="ログインIDを入力します。">
-
+              {{ form.username|add_class:'form-control'|append_attr:'placeholder:ログインIDを入力します。' }}
             </div>
 
             <!-- Password -->
@@ -67,7 +78,7 @@
               <div class="input-group input-group-merge">
 
                 <!-- Input -->
-                <input type="password" class="form-control form-control-appended" placeholder="パスワードを入力します。">
+                {{ form.password|add_class:'form-control form-control-appended'|append_attr:'placeholder:パスワードを入力します。' }}<br>
 
                 <!-- Icon -->
                 <div class="input-group-append">
@@ -83,6 +94,7 @@
             <button class="btn btn-lg btn-block btn-primary mb-3">
               ログイン
             </button>
+            {% csrf_token %}
           </form>
 
         </div>
@@ -111,6 +123,12 @@
 
     <!-- Theme JS -->
     <script src="{% static 'dashboard/assets/js/theme.min.js' %}"></script>
+
+    <script>
+    (function(){
+        $('#id_username').focus().get(0).setSelectionRange(1000,1000);
+    })();
+    </script>
 
   </body>
 </html>

@@ -114,3 +114,5 @@ pip-selfcheck.json
 
 # other
 test.*
+*_bak/
+.DS_Store

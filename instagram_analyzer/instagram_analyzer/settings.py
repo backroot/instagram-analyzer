@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_crontab',
+    'widget_tweaks',
     'dashboard',
 ]
 
@@ -121,7 +122,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_REDIRECT_URL = '/dashboard/index'
+LOGOUT_REDIRECT_URL = '/dashboard/login/'
+
 # CRON Jobs
 CRONJOBS = [
-    ('0 * * * *', 'dashboard.cron.scrape_instagram')
+    ('5 0 * * *', 'dashboard.cron.scrape_instagram')
 ]

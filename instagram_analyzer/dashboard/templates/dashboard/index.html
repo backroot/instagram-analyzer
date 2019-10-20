@@ -1,6 +1,6 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -13,17 +13,18 @@
     <link rel="stylesheet" href="{% static 'dashboard/assets/libs/select2/dist/css/select2.min.css' %}">
     <link rel="stylesheet" href="{% static 'dashboard/assets/libs/highlight.js/styles/vs2015.css' %}">
 
-    <!-- Map -->
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
-
     <!-- Theme CSS -->
     <link rel="stylesheet" href="{% static 'dashboard/assets/css/theme.min.css' %}" id="stylesheetLight">
     <link rel="stylesheet" href="{% static 'dashboard/assets/css/theme-dark.min.css' %}" id="stylesheetDark">
+
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
 
     <style>body { display: none; }</style>
     
 
     <title>Instagram Analyzer</title>
+
+    <style>td.account-count { text-align: right; }</style>
   </head>
   <body>
 
@@ -54,12 +55,20 @@
                   <div class="collapse show" id="sidebarDashboards">
                     <ul class="nav nav-sm flex-column">
                       <li class="nav-item">
-                        <a href="index.html" class="nav-link active">
+                        {% if mode == 'followers' %}
+                        <a href="index?mode=followers" class="nav-link active">
+                        {% else %}
+                        <a href="index?mode=followers" class="nav-link">
+                        {% endif %}
                           フォロワー数
                         </a>
                       </li>
                       <li class="nav-item">
-                        <a href="dashboard-alt.html" class="nav-link ">
+                        {% if mode == 'follows' %}
+                        <a href="index?mode=follows" class="nav-link active">
+                        {% else %}
+                        <a href="index?mode=follows" class="nav-link ">
+                        {% endif %}
                           フォロー数
                         </a>
                       </li>
@@ -72,7 +81,7 @@
               <hr class="navbar-divider my-3">
               
               <!-- Customize -->
-              <a href="#modalDemo" class="btn btn-block btn-light mb-4">
+              <a href="logout/" class="btn btn-block btn-light mb-4">
                 <i class="fe fe-power mr-2"></i>ログアウト
               </a>
               
@@ -102,316 +111,242 @@
     <div class="row align-items-center">
       <div class="col">
         <div class="h2 my-2 header-title d-inline-block">アカウント情報一覧</div>
+        {% if mode == 'follows' %}
+        <div class="alert alert-secondary mx-2 my-0 p-2 d-inline-block" role="alert">フォロー数</div>
+        {% else %}
         <div class="alert alert-secondary mx-2 my-0 p-2 d-inline-block" role="alert">フォロワー数</div>
+        {% endif %}
       </div>
       <div class="col-auto">
-        <a href="#" class="btn btn-info mr-5 my-2"><span class="fe fe-activity mr-2"></span>フォロー数に切り替え</a>
-        <a href="#" class="btn btn-primary my-2"><span class="fe fe-user-plus mr-2"></span>アカウント追加</a>
+        {% if mode == 'follows' %}
+        <a href="index?mode=followers" class="btn btn-info mr-5 my-2"><span class="fe fe-activity mr-2"></span>フォロワー数に切り替え</a>
+        {% else %}
+        <a href="index?mode=follows" class="btn btn-info mr-5 my-2"><span class="fe fe-activity mr-2"></span>フォロー数に切り替え</a>
+        {% endif %}
+        <a href="#" class="btn btn-primary my-2" id="openAddAccountForm" data-toggle="modal" data-target="#addAccountForm"><span class="fe fe-user-plus mr-2"></span>アカウント追加</a>
       </div>
     </div>
-{{ data | safe }}
 
               </div>
-              <div class="table-responsive mb-0" data-toggle="lists" data-options='{"valueNames": ["goal-project", "goal-status", "goal-progress", "goal-date"]}'>
+              <div class="table-responsive mb-0">
                 <table class="table table-sm table-nowrap card-table">
                   <thead>
                     <tr>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-project">No.</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-status">アカウント</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-progress">今月</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">本日</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">1日前</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">2日前</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">3日前</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">4日前</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">5日前</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">6日前</a></th>
-                      <th><a href="#" class="text-muted sort" data-sort="goal-date">7日前</a></th>
+                      {% if sort == "id" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=id&order=desc" class="text-muted sort" data-sort="id">No.</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=id&order=asc" class="text-muted sort" data-sort="id">No.</a></th>
+                      {% endif %}
+                      {% if sort == "account_name" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=account_name&order=desc" class="text-muted sort" data-sort="account_name">アカウント</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=account_name&order=asc" class="text-muted sort" data-sort="account_name">アカウント</a></th>
+                      {% endif %}
+                      {% if sort == "month_now" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=month_now&order=desc" class="text-muted sort" data-sort="month_now">今月</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=month_now&order=asc" class="text-muted sort" data-sort="month_now">今月</a></th>
+                      {% endif %}
+                      {% if sort == "today" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=today&order=desc" class="text-muted sort" data-sort="today">本日</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=today&order=asc" class="text-muted sort" data-sort="today">本日</a></th>
+                      {% endif %}
+                      {% if sort == "prev_one" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_one&order=desc" class="text-muted sort" data-sort="prev_one">1日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_one&order=asc" class="text-muted sort" data-sort="prev_one">1日前</a></th>
+                      {% endif %}
+                      {% if sort == "prev_two" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_two&order=desc" class="text-muted sort" data-sort="prev_two">2日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_two&order=asc" class="text-muted sort" data-sort="prev_two">2日前</a></th>
+                      {% endif %}
+                      {% if sort == "prev_three" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_three&order=desc" class="text-muted sort" data-sort="prev_three">3日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_three&order=asc" class="text-muted sort" data-sort="prev_three">3日前</a></th>
+                      {% endif %}
+                      {% if sort == "prev_four" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_four&order=desc" class="text-muted sort" data-sort="prev_four">4日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_four&order=asc" class="text-muted sort" data-sort="prev_four">4日前</a></th>
+                      {% endif %}
+                      {% if sort == "prev_five" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_five&order=desc" class="text-muted sort" data-sort="prev_five">5日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_five&order=asc" class="text-muted sort" data-sort="prev_five">5日前</a></th>
+                      {% endif %}
+                      {% if sort == "prev_six" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_six&order=desc" class="text-muted sort" data-sort="prev_six">6日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_six&order=asc" class="text-muted sort" data-sort="prev_six">6日前</a></th>
+                      {% endif %}
+                      {% if sort == "prev_seven" and order == "asc" %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_seven&order=desc" class="text-muted sort" data-sort="prev_seven">7日前</a></th>
+                      {% else %}
+                      <th><a href="index?mode={{ mode }}&sort=prev_seven&order=asc" class="text-muted sort" data-sort="prev_seven">7日前</a></th>
+                      {% endif %}
                     </tr>
                   </thead>
                   <tbody class="list">
+                    {% for account in account_list %}
                     <tr>
-                      <td class="account align-middle text-right">1</td>
+                      <td class="account align-middle text-right">{{ account.id }}</td>
                       <td class="account text-left">
-                          <a href="profile-posts.html">
+                          <a href="https://www.instagram.com/{{ account.account_name }}/" target="_blank">
                             <div class="avatar avatar-sm">
-                              <img src="https://scontent-nrt1-1.cdninstagram.com/vp/9b192725e2222a76c593c8e6e964c5bf/5E1CCBCF/t51.2885-19/s150x150/27579345_1431310310331743_8922265954340044800_n.jpg?_nc_ht=scontent-nrt1-1.cdninstagram.com" class="avatar-img rounded-circle mr-2" alt="...">
+                              <img src="{{ account.profile_pic_url }}" class="avatar-img rounded-circle mr-2" alt="">
                             </div>
-                            <span>kirin_brewery</span>
+                            <span>{{ account.account_name }}</span>
                           </a>
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.month_now is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.month_now}}</span>
+                        {% endif %}
+                        {% if 0 < account.month_diff %}
+                        <span class="d-block text-primary">+{{ account.month_diff}}</span>
+                        {% elif 0 == account.month_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.month_diff }}</span>
+                        {% elif 0 > account.month_diff %}
+                        <span class="d-block text-danger">-{{ account.month_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-danger">-1000</span>
+                        {% if account.today is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.today }}</span>
+                        {% endif %}
+                        {% if 0 < account.today_diff %}
+                        <span class="d-block text-primary">+{{ account.today_diff }}</span>
+                        {% elif 0 == account.today_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.today_diff }}</span>
+                        {% elif 0 > account.today_diff %}
+                        <span class="d-block text-danger">-{{ account.today_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_one is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_one }}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_one_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_one_diff }}</span>
+                        {% elif 0 == account.prev_one_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_one_diff }}</span>
+                        {% elif 0 > account.prev_one_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_one_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_two is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_two}}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_two_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_two_diff }}</span>
+                        {% elif 0 == account.prev_two_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_two_diff }}</span>
+                        {% elif 0 > account.prev_two_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_two_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_three is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_three }}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_three_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_three_diff }}</span>
+                        {% elif 0 == account.prev_three_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_three_diff }}</span>
+                        {% elif 0 > account.prev_three_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_three_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_four is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_four }}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_four_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_four_diff }}</span>
+                        {% elif 0 == account.prev_four_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_four_diff }}</span>
+                        {% elif 0 > account.prev_four_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_four_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_five is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_five }}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_five_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_five_diff }}</span>
+                        {% elif 0 == account.prev_five_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_five_diff }}</span>
+                        {% elif 0 > account.prev_five_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_five_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_six is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_six }}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_six_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_six_diff }}</span>
+                        {% elif 0 == account.prev_six_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_six_diff }}</span>
+                        {% elif 0 > account.prev_six_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_six_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
+                        {% if account.prev_seven is None %}
+                        <span class="d-block"></span>
+                        {% else %} 
+                        <span class="d-block">{{ account.prev_seven }}</span>
+                        {% endif %}
+                        {% if 0 < account.prev_seven_diff %}
+                        <span class="d-block text-primary">+{{ account.prev_seven_diff }}</span>
+                        {% elif 0 == account.prev_seven_diff %}
+                        <span class="d-block text-secondary">&plusmn;{{ account.prev_seven_diff }}</span>
+                        {% elif 0 > account.prev_seven_diff %}
+                        <span class="d-block text-danger">-{{ account.prev_seven_diff }}</span>
+                        {% else %} 
+                        <span class="d-block text-secondary"></span>
+                        {% endif %}
                       </td>
                       </td>
                     </tr>
-                    <tr>
-                      <td class="account align-middle text-right">2</td>
-                      <td class="account text-left">
-                          <a href="profile-posts.html">
-                            <div class="avatar avatar-sm">
-                              <img src="https://scontent-nrt1-1.cdninstagram.com/vp/9b192725e2222a76c593c8e6e964c5bf/5E1CCBCF/t51.2885-19/s150x150/27579345_1431310310331743_8922265954340044800_n.jpg?_nc_ht=scontent-nrt1-1.cdninstagram.com" class="avatar-img rounded-circle mr-2" alt="...">
-                            </div>
-                            <span>kirin_brewery</span>
-                          </a>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-danger">-1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="account align-middle text-right">3</td>
-                      <td class="account text-left">
-                          <a href="profile-posts.html">
-                            <div class="avatar avatar-sm">
-                              <img src="https://scontent-nrt1-1.cdninstagram.com/vp/9b192725e2222a76c593c8e6e964c5bf/5E1CCBCF/t51.2885-19/s150x150/27579345_1431310310331743_8922265954340044800_n.jpg?_nc_ht=scontent-nrt1-1.cdninstagram.com" class="avatar-img rounded-circle mr-2" alt="...">
-                            </div>
-                            <span>kirin_brewery</span>
-                          </a>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-danger">-1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="account align-middle text-right">4</td>
-                      <td class="account text-left">
-                          <a href="profile-posts.html">
-                            <div class="avatar avatar-sm">
-                              <img src="https://scontent-nrt1-1.cdninstagram.com/vp/9b192725e2222a76c593c8e6e964c5bf/5E1CCBCF/t51.2885-19/s150x150/27579345_1431310310331743_8922265954340044800_n.jpg?_nc_ht=scontent-nrt1-1.cdninstagram.com" class="avatar-img rounded-circle mr-2" alt="...">
-                            </div>
-                            <span>kirin_brewery</span>
-                          </a>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-danger">-1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="account align-middle text-right">5</td>
-                      <td class="account text-left">
-                          <a href="profile-posts.html">
-                            <div class="avatar avatar-sm">
-                              <img src="https://scontent-nrt1-1.cdninstagram.com/vp/9b192725e2222a76c593c8e6e964c5bf/5E1CCBCF/t51.2885-19/s150x150/27579345_1431310310331743_8922265954340044800_n.jpg?_nc_ht=scontent-nrt1-1.cdninstagram.com" class="avatar-img rounded-circle mr-2" alt="...">
-                            </div>
-                            <span>kirin_brewery</span>
-                          </a>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-danger">-1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="account align-middle text-right">6</td>
-                      <td class="account text-left">
-                          <a href="profile-posts.html">
-                            <div class="avatar avatar-sm">
-                              <img src="https://scontent-nrt1-1.cdninstagram.com/vp/9b192725e2222a76c593c8e6e964c5bf/5E1CCBCF/t51.2885-19/s150x150/27579345_1431310310331743_8922265954340044800_n.jpg?_nc_ht=scontent-nrt1-1.cdninstagram.com" class="avatar-img rounded-circle mr-2" alt="...">
-                            </div>
-                            <span>kirin_brewery</span>
-                          </a>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-danger">-1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      <td class="account-count">
-                        <span class="d-block">1000</span>
-                        <span class="d-block text-primary">1000</span>
-                      </td>
-                      </td>
-                    </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>
@@ -422,6 +357,39 @@
       </div>
 
     </div> <!-- / .main-content -->
+
+    <!-- Model for add account -->
+    <div class="modal fade" id="addAccountForm" tabindex="-1" role="dialog" aria-labelledby="addAccountFormTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="addAccountFormTitle">アカウント追加</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="min-height: 160px;">
+            <form>
+              <div class="form-group">
+                <input type="text" class="form-control form-control-rounded" id="account_name" placeholder="アカウント名を入力します。">
+              </div>
+              {% csrf_token %}
+            </form>
+            <div class="d-none alert alert-primary" id="successMessage" style="margin: 0;" role="alert"></div>
+            <div class="d-none alert alert-danger" id="errorMessage" style="margin: 0;" role="alert"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+            <button type="button" class="btn btn-primary" id="btnAddAccount">追加する</button>
+            <div class="d-none" id="loadingAddAcount" style="min-width: 90px; text-align: center;">
+                <div class="spinner-border spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- JAVASCRIPT
     ================================================== -->
@@ -440,11 +408,80 @@
     <script src="{% static 'dashboard/assets/libs/select2/dist/js/select2.min.js' %}"></script>
     <script src="{% static 'dashboard/assets/libs/chart.js/Chart.extension.min.js' %}"></script>
 
-    <!-- Map -->
-    <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
-
     <!-- Theme JS -->
     <script src="{% static 'dashboard/assets/js/theme.min.js' %}"></script>
+
+    <!-- Index -->
+    <script>
+    (function(){
+        $('#addAccountForm').on('shown.bs.modal', function(){
+            $('#account_name').focus();
+            //location.reload(true)
+        });
+        $('#addAccountForm').on('hidden.bs.modal', function(){
+            location.reload(true);
+        });
+    })();
+    (function(){
+        $('#btnAddAccount').on('click', function(){
+
+            $('#loadingAddAcount').removeClass('d-none');
+            $('#btnAddAccount').addClass('d-none');
+
+            var account_name = $('#account_name').val();
+            var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+
+            $('#successMessage').text("");
+            $('#successMessage').addClass('d-none');
+            $('#errorMessage').text("");
+            $('#errorMessage').addClass('d-none');
+
+            setTimeout(function(){
+                $.ajax('add_account', {
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        'account_name': account_name
+                    },
+                    beforeSend: function(xhr, settings) {
+                        safe = (/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type))
+                        if (!safe && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                        }
+                    }
+                }).done(function(data){
+                    if (data.code && data.code === 2001) {
+                        $('#errorMessage').text("アカウント名が入力されていません。");
+                        $('#errorMessage').removeClass('d-none');
+                    } else if (data.code && data.code === 2002) {
+                        $('#successMessage').text("アカウント「" + account_name  +"」を追加しました。");
+                        $('#successMessage').removeClass('d-none');
+                    } else if (data.code && data.code === 2003) {
+                        $('#successMessage').text("アカウント「" + account_name  +"」は既に登録済です。");
+                        $('#successMessage').removeClass('d-none');
+                    } else {
+                        $('#errorMessage').text("予期せぬエラーが発生しました。");
+                        $('#errorMessage').removeClass('d-none');
+                    }
+                    $('#account_name').focus();
+                    $('#loadingAddAcount').addClass('d-none');
+                    $('#btnAddAccount').removeClass('d-none');
+                }).fail(function(data){
+                    if (data.status === 404) {
+                        $('#errorMessage').text("入力されたアカウントが見つかりませんでした。");
+                        $('#errorMessage').removeClass('d-none');
+                    } else {
+                        $('#errorMessage').text("システム障害が発生しました。");
+                        $('#errorMessage').removeClass('d-none');
+                    }
+                    $('#account_name').focus();
+                    $('#loadingAddAcount').addClass('d-none');
+                    $('#btnAddAccount').removeClass('d-none');
+                });
+            },1000);
+        });
+    })();
+    </script>
 
   </body>
 </html>
