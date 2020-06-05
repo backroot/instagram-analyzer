@@ -1,6 +1,6 @@
 certifi==2019.9.11
 chardet==3.0.4
-Django==2.2.10
+Django==2.2.13
 django-crontab==0.7.1
 django-widget-tweaks==1.4.5
 idna==2.8
